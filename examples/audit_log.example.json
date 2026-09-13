@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-09-13T14:18:05+00:00",
+  "version": "0.1.0",
+  "input_fingerprint": "21ca4ee77584",
+  "data_path": "data/sample_portfolio.json",
+  "as_of": "2026-08-31",
+  "steps": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "opinions": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+  ],
+  "disagreements": 1,
+  "duration_gap_after": -3.5452,
+  "turnover_pct": 11.5,
+  "gate_status": "升级审批",
+  "gate_items": [
+    {
+      "rule": "权益类资产上限",
+      "actual": "20.0%",
+      "status": "提示"
+    },
+    {
+      "rule": "另类资产上限",
+      "actual": "10.0%",
+      "status": "通过"
+    },
+    {
+      "rule": "单一主体集中度",
+      "actual": "城投债 A(6.0%) 存量超限，本期目标已压回",
+      "status": "降规模"
+    },
+    {
+      "rule": "流动性下限",
+      "actual": "5.0%",
+      "status": "提示"
+    },
+    {
+      "rule": "久期缺口容忍度",
+      "actual": "-3.55 年",
+      "status": "升级审批"
+    },
+    {
+      "rule": "单期换手上限",
+      "actual": "11.50%",
+      "status": "通过"
+    },
+    {
+      "rule": "收益与负债成本利差",
+      "actual": "+0.10%",
+      "status": "通过"
+    }
+  ]
+}

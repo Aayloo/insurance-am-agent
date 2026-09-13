@@ -1,0 +1,23 @@
+# 约束清单模板（示意值，非监管口径）
+#
+# 说明：本文件是人类可读的规格说明；零依赖的 Demo 直接从
+# data/sample_portfolio.json 的 "constraints" 字段读取同名参数。
+# 接入真实流程时，请把内部制度与最新监管文件的口径写入此处与数据文件，
+# 并标注生效日期与适用主体。
+
+effective_date: "2026-08-31"
+applies_to: "示例组合（合成数据）"
+
+constraints:
+  equity_cap_pct: 20.0            # 权益类资产上限，实际按偿付能力分档
+  alternative_cap_pct: 15.0       # 另类资产上限
+  single_issuer_cap_pct: 5.0      # 单一主体集中度上限
+  min_liquidity_pct: 5.0          # 流动性下限
+  duration_tolerance_years: 1.5   # 久期缺口容忍度（年）
+  max_turnover_pct: 15.0          # 单期换手上限
+
+governance:
+  equity_cap_owner: "合规 Agent 初筛，风控复核"
+  duration_owner: "ALM Agent 测算，投委会审批"
+  order_execution: "人工执行，Agent 不接触交易接口"
+  sign_off: "投资经理、风控合规、投委会"

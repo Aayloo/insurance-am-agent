@@ -1,0 +1,136 @@
+{
+  "as_of": "2026-08-31",
+  "currency": "CNY",
+  "note": "合成样例数据，仅用于演示；数值均为示意，不含任何机构内部数据。",
+  "liability": {
+    "duration": 9.0,
+    "cost_pct": 3.20,
+    "annual_cashflow_pct": 6.5
+  },
+  "market": {
+    "curve_10y": 3.10,
+    "curve_slope": -0.15,
+    "credit_spread_pct": 1.15,
+    "spread_percentile": 28,
+    "equity_dividend_yield": 5.20,
+    "rate_shock_bp": 50
+  },
+  "constraints": {
+    "equity_cap_pct": 20.0,
+    "alternative_cap_pct": 15.0,
+    "single_issuer_cap_pct": 5.0,
+    "min_liquidity_pct": 5.0,
+    "duration_tolerance_years": 1.5,
+    "max_turnover_pct": 15.0
+  },
+  "holdings": [
+    {
+      "name": "国债与政金债",
+      "asset_class": "rate_bond",
+      "weight": 0.28,
+      "duration": 8.5,
+      "yield_pct": 2.60,
+      "rating": "AAA",
+      "issuer": "主权与准主权",
+      "issuer_type": "sovereign",
+      "liquidity_days": 1,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "地方政府债",
+      "asset_class": "rate_bond",
+      "weight": 0.07,
+      "duration": 7.0,
+      "yield_pct": 2.80,
+      "rating": "AAA",
+      "issuer": "地方政府",
+      "issuer_type": "sovereign",
+      "liquidity_days": 2,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "高评级信用债",
+      "asset_class": "credit_bond",
+      "weight": 0.15,
+      "duration": 3.5,
+      "yield_pct": 3.30,
+      "rating": "AA+",
+      "issuer": "多元发行人",
+      "issuer_type": "diversified",
+      "liquidity_days": 3,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "城投债 A",
+      "asset_class": "credit_bond",
+      "weight": 0.06,
+      "duration": 4.0,
+      "yield_pct": 3.90,
+      "rating": "AA+",
+      "issuer": "某城投集团",
+      "issuer_type": "single_name",
+      "liquidity_days": 5,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "银行协议存款",
+      "asset_class": "cash",
+      "weight": 0.09,
+      "duration": 0.5,
+      "yield_pct": 2.10,
+      "rating": "AAA",
+      "issuer": "托管银行",
+      "issuer_type": "counterparty",
+      "liquidity_days": 0,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "货币基金",
+      "asset_class": "cash",
+      "weight": 0.05,
+      "duration": 0.1,
+      "yield_pct": 1.80,
+      "rating": "AAA",
+      "issuer": "基金公司",
+      "issuer_type": "diversified",
+      "liquidity_days": 0,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "高股息权益",
+      "asset_class": "equity",
+      "weight": 0.14,
+      "duration": 0.0,
+      "yield_pct": 5.20,
+      "rating": "",
+      "issuer": "多元上市公司",
+      "issuer_type": "diversified",
+      "liquidity_days": 1,
+      "valuation_date": "2026-08-31"
+    },
+    {
+      "name": "宽基权益",
+      "asset_class": "equity",
+      "weight": 0.06,
+      "duration": 0.0,
+      "yield_pct": 2.00,
+      "rating": "",
+      "issuer": "多元上市公司",
+      "issuer_type": "diversified",
+      "liquidity_days": 1,
+      "valuation_date": "2026-08-29"
+    },
+    {
+      "name": "不动产与基建",
+      "asset_class": "alternative",
+      "weight": 0.10,
+      "duration": 10.0,
+      "yield_pct": 4.80,
+      "rating": "",
+      "issuer": "项目公司",
+      "issuer_type": "diversified",
+      "liquidity_days": 90,
+      "valuation_date": "2026-08-31"
+    }
+  ]
+}

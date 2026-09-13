@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "insurance-am-agent"
+version = "0.1.0"
+description = "Multi-agent research framework for insurance asset management: liabilities and compliance constraints first."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["insurance", "asset-management", "multi-agent", "ALM", "solvency", "investment-research"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = []
+
+[project.scripts]
+ins-am-agent = "ins_am_agent.cli:main"
+
+[tool.setuptools]
+packages = ["ins_am_agent", "ins_am_agent.agents"]
