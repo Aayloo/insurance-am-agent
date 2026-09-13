@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Dependencies: zero](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)](#快速开始)
+[![tests](https://github.com/Aayloo/insurance-am-agent/actions/workflows/tests.yml/badge.svg)](https://github.com/Aayloo/insurance-am-agent/actions/workflows/tests.yml)
 [![Status: v0.1 runnable](https://img.shields.io/badge/status-v0.1%20runnable-yellow.svg)](#路线图)
 [![Docs: 中文 / English](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87%20%2F%20English-informational.svg)](docs/)
 
