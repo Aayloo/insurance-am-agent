@@ -7,6 +7,8 @@
 [![Status: v0.1 runnable](https://img.shields.io/badge/status-v0.1%20runnable-yellow.svg)](#路线图)
 [![Docs: 中文 / English](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87%20%2F%20English-informational.svg)](docs/)
 
+![Insurance AM Agent 四层架构](docs/assets/hero.svg)
+
 > **一句话**：这是一个**面向保险资管的投研 Agent 框架**——结构上像 TradingAgents 那样由一组研究员 Agent 协作，但**起点不是行情，而是负债；终点不是交易单，而是带签批与留痕的决策建议。**
 
 ```
@@ -15,11 +17,25 @@
 
 ---
 
+## 60 秒看懂
+
+| 你想知道 | 答案 |
+| --- | --- |
+| 这是什么 | 保险资管的投研 Agent 框架 + 可运行的零依赖 Demo |
+| 像 TradingAgents 吗 | 骨架像（多角色、辩论、审批），约束不同（负债、监管、会计三道硬约束） |
+| 做几个 Agent | 起步 2-3 个，标准 5-7 个，完整 8-10 个；拆不拆看"独立数据 / 方法 / 输出 / 责任人" |
+| 能自动下单吗 | 不能，也不应该。下单与签批留给人 |
+| 现在能跑吗 | 能。`python -m ins_am_agent`，8 个单元测试全绿 |
+
+---
+
 ## 目录
 
 - [这是不是"保险资管版的 TradingAgents"？](#这是不是保险资管版的-tradingagents)
 - [架构：A / B / C / D 四层](#架构a--b--c--d-四层)
-- [一次运行会发生什么](#一次运行会发生什么)
+- [一次运行会发生什么：现状 vs 目标态](#一次运行会发生什么现状-vs-目标态)
+- [图表总览](#图表总览)
+- [文档导航](#文档导航)
 - [快速开始](#快速开始)
 - [示例输出](#示例输出)
 - [仓库结构](#仓库结构)
@@ -113,21 +129,54 @@ flowchart TB
 
 ---
 
-## 一次运行会发生什么
+## 一次运行会发生什么：现状 vs 目标态
+
+两张图对照看，差异只在一点：**中间环节由谁承担**。人始终保留签批与下单两处。
+
+### 现状：投资经理串起全流程
 
 ```mermaid
 sequenceDiagram
   autonumber
-  box rgba(253,243,200,0.6) 人
+  box rgba(253,243,200,0.6) 人：决策与审核
     actor PM as 投资经理
-    actor RK as 风控合规
+    actor RK as 风控与合规
+    actor CC as 投委会
   end
-  box rgba(221,243,224,0.6) Agent
-    participant OR as 编排器
+  box rgba(220,235,250,0.6) 系统：数据与工具
+    participant DW as 数据中台
+    participant MO as 模型与优化
+    participant TS as 投资交易系统
+    participant RP as 估值与报表
+  end
+
+  DW->>PM: 提供持仓、市场与负债数据
+  PM->>MO: 设定约束与情景假设
+  MO-->>PM: 配置建议与偏离区间
+  PM->>RK: 提交限额、资本与合规核验
+  RK-->>PM: 风控与合规意见
+  PM->>CC: 上会审议
+  CC-->>PM: 批准目标权重
+  PM->>TS: 下达交易指令
+  TS->>RP: 更新成交与持仓
+  RP-->>PM: 估值、归因与限额报告
+```
+
+### 目标态：Agent 承担中间环节，人只签批
+
+```mermaid
+sequenceDiagram
+  autonumber
+  box rgba(253,243,200,0.6) 人：只做判断与签批
+    actor PM as 投资经理
+    actor RK as 风控与合规
+  end
+  box rgba(221,243,224,0.6) Agent：新增
+    participant OR as 编排 Agent
     participant RS as 研究 Agent 群
     participant AL as ALM 与组合 Agent
   end
-  box rgba(220,235,250,0.6) 系统
+  box rgba(220,235,250,0.6) 系统：已有
     participant DW as 数据层
     participant RP as 报告与留痕
   end
@@ -144,11 +193,18 @@ sequenceDiagram
   end
   RS-->>OR: 观点 + 证据 + 置信度 + 失效条件
   AL-->>OR: 配置建议 + 压力测试
-  OR->>RK: 提交闸门校验结果
-  RK-->>OR: 签批或退回
+  OR->>RK: 提交闸门校验结果与例外项
+  alt 闸门通过
+    RK-->>OR: 签批，附风险提示
+  else 触限或超出容忍度
+    RK-->>OR: 降规模 / 升级审批
+  end
   OR->>RP: 生成报告与审计日志
   RP-->>PM: 建议书 + 可复现记录
+  Note over PM,RK: 签批后由人工下单，Agent 不接触交易接口
 ```
+
+**一句话**：现状是"人串起全流程"，目标态是"人只签批"。这也是判断 Agent 项目是否成功的标准——**中间环节被接管了多少，而人的两处责任没有被削弱**。
 
 ---
 
@@ -194,6 +250,43 @@ ins-am-agent --out examples/sample_report.md
 
 ---
 
+## 图表总览
+
+全部图表使用 Mermaid 编写，GitHub 直接渲染，可复制到任何支持 Mermaid 的编辑器修改。
+
+| 图 | 类型 | 说明 | 位置 |
+| --- | --- | --- | --- |
+| A/B/C/D 四层架构 | 流程图 | 主架构与反馈闭环 | README 上方 · [03](docs/03-agent-architecture.md) |
+| 投研团队协作 | 流程图 | 四个研究员并行 + 交叉质询 + 人工复核 | [03](docs/03-agent-architecture.md) |
+| 演进路线 | 流程图 | 从 2 个 Agent 到 10 个的分阶段路径 | [03](docs/03-agent-architecture.md) |
+| 业务四步闭环 | 流程图 | 定约束 → 定配置 → 做交易 → 控与报 | [01](docs/01-business-overview.md) |
+| Agent 目标架构 | 流程图 | 系统在底、Agent 在中、人在顶 | [01](docs/01-business-overview.md) |
+| 投资四道闸门 | 流程图 | 监管比例 · 内部授权 · 风险限额 · 会计披露 | [01](docs/01-business-overview.md) |
+| 配置决策（现状） | 时序图 | 人主导，系统支撑 | [01](docs/01-business-overview.md) |
+| 配置决策（目标态） | 时序图 | Agent 承担中间环节，人只签批 | [01](docs/01-business-overview.md) |
+| 全景框架 | 流程图 | 治理 → 负债 → 资产 → 中后台 → 底座 | [02](docs/02-full-diagrams.md) |
+| 投资价值链 | 流程图 | 含三个反馈闭环 | [02](docs/02-full-diagrams.md) |
+| SAA / TAA 子流程 | 流程图 | 输入 → 方法 → 输出 → 验收 | [02](docs/02-full-diagrams.md) |
+| 限额校验链 | 流程图 | 下单前六道闸门 | [02](docs/02-full-diagrams.md) |
+| 季度 SAA + 月度 TAA | 时序图 | 八角色协作 | [02](docs/02-full-diagrams.md) |
+| 单笔投资端到端 | 时序图 | 立项到存续期预警 | [02](docs/02-full-diagrams.md) |
+| 月末估值归因报送 | 时序图 | 锁账到监管报送 | [02](docs/02-full-diagrams.md) |
+| 投资生命周期 | 状态图 | 立项 → 存续 → 退出 | [02](docs/02-full-diagrams.md) |
+| Agent 编排一次配置建议 | 时序图 | 含辩论循环与风控否决分支 | [02](docs/02-full-diagrams.md) |
+
+---
+
+## 文档导航
+
+| 文档 | 内容 | 适合谁 |
+| --- | --- | --- |
+| [01 业务全景](docs/01-business-overview.md) | 五张图讲清保险资管怎么运转，人与系统如何分工 | 领导汇报、新同事入门 |
+| [02 完整图集](docs/02-full-diagrams.md) | 十张图，含价值链、ALM、归因报送全流程 | 拆解 Agent 时查证 |
+| [03 Agent 架构](docs/03-agent-architecture.md) | A/B/C/D 四层、做几个 Agent、优化建议 | 技术方案评审 |
+| [04 落地路线](docs/04-roadmap.md) | 机会矩阵、数据契约、合规红线、分阶段路线 | 项目排期与立项 |
+
+---
+
 ## 仓库结构
 
 ```text
@@ -211,8 +304,8 @@ insurance-am-agent/
 │  └─ cli.py                 # 命令行入口
 ├─ data/sample_portfolio.json # 合成样例数据
 ├─ config/constraints.yaml    # 示例约束（示意值，非监管口径）
-├─ docs/                      # 业务框架与架构文档
-├─ examples/sample_report.md  # 示例输出
+├─ docs/                      # 业务框架与架构文档（含主视觉图 assets/hero.svg）
+├─ examples/                  # 示例输出与审计日志
 └─ tests/                     # 单元测试
 ```
 

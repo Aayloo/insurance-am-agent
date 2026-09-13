@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="Insurance AM Agent：A 数据与约束，B 投研团队，C 配置决策，D 闸门与输出">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/>
+    </marker>
+  </defs>
+
+  <rect x="1" y="1" width="1278" height="398" rx="24" fill="#FFFFFF" stroke="#E2E8F0"/>
+
+  <text x="64" y="104" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="50" font-weight="700" fill="#0F172A">Insurance AM Agent</text>
+  <text x="64" y="146" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="21" fill="#475569">保险资管智能体框架 · 像 TradingAgents 那样的投研团队，但以负债与合规约束为先</text>
+
+  <!-- A -->
+  <rect x="64" y="188" width="252" height="112" rx="14" fill="#EFF5FD" stroke="#3E6E9E" stroke-width="1.5"/>
+  <circle cx="98" cy="226" r="17" fill="#3E6E9E"/>
+  <text x="98" y="232" text-anchor="middle" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="17" font-weight="700" fill="#FFFFFF">A</text>
+  <text x="126" y="232" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="20" font-weight="600" fill="#12324D">数据与约束</text>
+  <text x="98" y="262" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="15" fill="#41556B">取数 · 校验 · 约束清单</text>
+  <text x="98" y="284" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#6B7A8C">边界与红线</text>
+
+  <!-- B -->
+  <rect x="344" y="188" width="252" height="112" rx="14" fill="#E9F6EC" stroke="#3F8B54" stroke-width="1.5"/>
+  <circle cx="378" cy="226" r="17" fill="#3F8B54"/>
+  <text x="378" y="232" text-anchor="middle" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="17" font-weight="700" fill="#FFFFFF">B</text>
+  <text x="406" y="232" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="20" font-weight="600" fill="#123A1F">投研团队</text>
+  <text x="378" y="262" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="15" fill="#2F4A38">宏观 · 信用 · 权益 · 另类</text>
+  <text x="378" y="284" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#5E7367">并行研究 + 交叉质询</text>
+
+  <!-- C -->
+  <rect x="624" y="188" width="252" height="112" rx="14" fill="#E9F6EC" stroke="#3F8B54" stroke-width="1.5"/>
+  <circle cx="658" cy="226" r="17" fill="#3F8B54"/>
+  <text x="658" y="232" text-anchor="middle" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="17" font-weight="700" fill="#FFFFFF">C</text>
+  <text x="686" y="232" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="20" font-weight="600" fill="#123A1F">配置决策</text>
+  <text x="658" y="262" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="15" fill="#2F4A38">久期 · 压力测试 · 优化</text>
+  <text x="658" y="284" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#5E7367">约束下求最优解</text>
+
+  <!-- D -->
+  <rect x="904" y="188" width="252" height="112" rx="14" fill="#FBEFEF" stroke="#A96A6A" stroke-width="1.5"/>
+  <circle cx="938" cy="226" r="17" fill="#A96A6A"/>
+  <text x="938" y="232" text-anchor="middle" font-family="-apple-system, 'Segoe UI', sans-serif" font-size="17" font-weight="700" fill="#FFFFFF">D</text>
+  <text x="966" y="232" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="20" font-weight="600" fill="#4A1F1F">闸门与输出</text>
+  <text x="938" y="262" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="15" fill="#5A3A3A">风控合规 · 报告 · 留痕</text>
+  <text x="938" y="284" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#7A5C5C">能否执行 · 如何签批</text>
+
+  <!-- arrows -->
+  <line x1="318" y1="244" x2="338" y2="244" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="598" y1="244" x2="618" y2="244" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="878" y1="244" x2="898" y2="244" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- feedback loop -->
+  <path d="M 1030 300 L 1030 336 L 190 336 L 190 300" fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <text x="610" y="356" text-anchor="middle" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="14" fill="#64748B">资本与考核反馈回到约束层 · 人在签批与下单两处不可替代 · 结论全部留痕可复现</text>
+</svg>
