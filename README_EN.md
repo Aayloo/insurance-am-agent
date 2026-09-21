@@ -4,6 +4,10 @@
 
 [中文文档](README.md) ｜ [License: MIT](LICENSE)
 
+![ATLAS Web platform preview](docs/assets/platform-preview.svg)
+
+The repository contains the runnable Python A→B→C→D decision engine. **ATLAS** is the corresponding web product layer preview: Overview, Alpha Lab, Portfolio Studio, Risk & Scenarios, Agent Control, Research Vault, Execution and Governance. See the [interactive local preview](docs/platform-preview.html) and the [full product map](docs/05-platform-product-map.md).
+
 ## Is it "TradingAgents for insurance asset management"?
 
 Yes in skeleton, no in constraints.
@@ -26,6 +30,19 @@ flowchart LR
   C --> D["D · Gates and output<br/>compliance gate, report, sign-off, audit"]
   D -.->|capital and review feedback| A
 ```
+
+## What the platform exposes
+
+| Surface | Question it answers | Main output |
+| --- | --- | --- |
+| Overview | What needs attention today? | NAV, active risk, market regime, exceptions |
+| Alpha Lab | Which signals are trustworthy? | OOS IC, decay, capacity, model cards |
+| Portfolio Studio | How do views become weights? | Targets, costs, deviations, thesis |
+| Risk & Scenarios | Where do risk and P&L come from? | Exposures, attribution, stress results |
+| Agent Control | What did the agents do? | Trace, evidence, disagreement, escalation |
+| Governance | Who approved what? | Decision ledger, versions, audit trail |
+
+The web preview is synthetic and offline. It is not yet connected to live institutional data, APIs, or trading execution. The Python engine and Markdown/JSON outputs are runnable today.
 
 ## Quick start
 

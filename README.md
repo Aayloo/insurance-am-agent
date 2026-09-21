@@ -9,6 +9,12 @@
 
 ![Insurance AM Agent 四层架构](docs/assets/hero.svg)
 
+> **产品预览**：仓库当前是可运行的 Python 决策引擎；下面的 ATLAS 是它对应的 Web 产品层预览。它把同一条 A→B→C→D 流水线呈现给 PM、研究、风控、投委会和个人深度投资者。
+
+![ATLAS Web 平台预览](docs/assets/platform-preview.svg)
+
+[打开本地交互式平台预览](docs/platform-preview.html) · [查看项目到平台的完整产品地图](docs/05-platform-product-map.md)
+
 > **一句话**：这是一个**面向保险资管的投研 Agent 框架**——结构上像 TradingAgents 那样由一组研究员 Agent 协作，但**起点不是行情，而是负债；终点不是交易单，而是带签批与留痕的决策建议。**
 
 ```
@@ -26,6 +32,7 @@
 | 做几个 Agent | 起步 2-3 个，标准 5-7 个，完整 8-10 个；拆不拆看"独立数据 / 方法 / 输出 / 责任人" |
 | 能自动下单吗 | 不能，也不应该。下单与签批留给人 |
 | 现在能跑吗 | 能。`python -m ins_am_agent`，8 个单元测试全绿 |
+| 最后能看到什么 | Markdown 决策建议书 + JSON 审计日志 + ATLAS Web 平台预览 |
 
 ---
 
@@ -33,6 +40,7 @@
 
 - [这是不是"保险资管版的 TradingAgents"？](#这是不是保险资管版的-tradingagents)
 - [架构：A / B / C / D 四层](#架构a--b--c--d-四层)
+- [平台预览：最终会看到什么](#平台预览最终会看到什么)
 - [一次运行会发生什么：现状 vs 目标态](#一次运行会发生什么现状-vs-目标态)
 - [图表总览](#图表总览)
 - [文档导航](#文档导航)
@@ -114,6 +122,36 @@ flowchart TB
   D4 --> H1
   H1 -.->|成交与估值回写| A1
 ```
+
+## 平台预览：最终会看到什么
+
+ATLAS 不是另一个脱离代码的 Dashboard，而是同一条决策链的产品化呈现：
+
+```mermaid
+flowchart LR
+  classDef web fill:#D8F3F1,stroke:#238F8A,stroke-width:2px,color:#123B39
+  classDef calc fill:#E9E1FF,stroke:#7658B8,stroke-width:2px,color:#2E1B57
+  classDef gate fill:#F9DFDF,stroke:#A85151,stroke-width:2px,color:#4B1717
+  classDef human fill:#FFF4C2,stroke:#C59A1A,stroke-width:2px,color:#3B2F00
+  A["Overview<br/>组合 · 市场 · 例外"]:::web --> B["Alpha Lab<br/>信号 · 证据 · 衰减"]:::web
+  B --> C["Portfolio Studio<br/>目标权重 · 成本 · 偏离"]:::calc
+  C --> D["Risk & Scenarios<br/>归因 · 压力 · 流动性"]:::gate
+  D --> E["Agent Control<br/>运行轨迹 · 反方论证"]:::web
+  E --> F["Governance<br/>审批 · 版本 · 审计"]:::human
+  F -.->|人签批后人工执行| A
+```
+
+| 页面 | 给谁用 | 关键问题 | 看到的内容 |
+| --- | --- | --- | --- |
+| Overview | PM / CIO / 个人投资者 | 今天什么最重要？ | NAV、主动风险、市场状态、例外队列、AI IC 摘要 |
+| Alpha Lab | Quant / 研究员 | 哪些信号可被信任？ | OOS IC、衰减、容量、模型卡、失效条件 |
+| Portfolio Studio | PM / 组合分析 | 观点怎样变成权重？ | 当前/目标配置、调整建议、换手成本、投资 thesis |
+| Risk & Scenarios | 风控 / ALM | 风险从哪里来？ | 因子暴露、归因、压力测试、资本与流动性影响 |
+| Agent Control | AI 工程师 / 投研负责人 | Agent 做了什么？ | Agent graph、输入、证据、分歧、升级与模型版本 |
+| Research Vault | 投研团队 | 结论证据在哪里？ | 研报、制度、公告、反方 memo 与信号/持仓关联 |
+| Governance | 投委会 / 合规 | 谁批准了什么？ | 决策 ledger、审批状态、数据质量、模型治理 |
+
+> 当前 Web 页面是合成数据驱动的交互预览，不连接真实机构数据、API 或交易接口；Python A→B→C→D 引擎和报告/审计输出可以直接运行。
 
 ### 为什么不是"一个万能 Agent"，也不是"十几个 Agent"
 
@@ -308,6 +346,8 @@ insurance-am-agent/
 ├─ examples/                  # 示例输出与审计日志
 └─ tests/                     # 单元测试
 ```
+
+如果你想按“每个文件负责什么”来读，直接看 [05-platform-product-map.md](docs/05-platform-product-map.md) 的“仓库文件一览”；那里把入口配置、Python 引擎、输入输出、文档、预览和测试逐项映射到最终 Web 平台。
 
 ---
 
