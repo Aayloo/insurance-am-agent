@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insurance AM Agent · 保险资管多 Agent 框架</title>
+<meta name="description" content="保险资管的投研 Agent 框架：起点是负债，终点是带签批与留痕的决策建议。">
+<style>
+  :root {
+    --ink: #14202b;
+    --muted: #5b6b7a;
+    --line: #e2e8ee;
+    --accent: #1f6feb;
+    --bg: #fbfcfe;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 72px 24px 96px; }
+  .kicker {
+    margin: 0 0 12px;
+    font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 { margin: 0 0 16px; font-size: 38px; line-height: 1.2; letter-spacing: -.01em; }
+  .lede { margin: 0 0 36px; font-size: 18px; color: var(--muted); max-width: 62ch; }
+  .cta {
+    display: inline-block;
+    padding: 14px 22px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .cta:hover { background: #175bcc; }
+  .hint { margin: 14px 0 48px; font-size: 14px; color: var(--muted); }
+  h2 {
+    margin: 0 0 16px;
+    font-size: 13px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card {
+    display: block;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .card:hover { border-color: #c7d4e2; }
+  .card b { display: block; margin-bottom: 4px; font-weight: 600; }
+  .card span { font-size: 14px; color: var(--muted); }
+  .foot { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  a { color: var(--accent); }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e8eef5;
+      --muted: #97a6b6;
+      --line: #26313d;
+      --bg: #0e151d;
+      --card: #141d27;
+    }
+    .cta { background: #2f7ff0; }
+    .cta:hover { background: #4a92f5; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">Insurance AM Agent</p>
+  <h1>保险资管多 Agent 框架</h1>
+  <p class="lede">
+    结构上像 TradingAgents 那样由一组研究员 Agent 协作，但起点不是行情，而是负债；
+    终点不是交易单，而是带签批与留痕的决策建议。Agent 不接触交易接口。
+  </p>
+
+  <a class="cta" href="diagrams/insurance-am-agent-architecture.html">打开交互版四层架构图 →</a>
+  <p class="hint">
+    单文件 HTML，离线也能打开：点节点看职责、沿箭头追上下游、按 <b>F</b> 进演示模式、按 <b>E</b> 导出 PNG。
+  </p>
+
+  <h2>文档</h2>
+  <div class="cards">
+    <a class="card" href="https://github.com/Aayloo/insurance-am-agent/blob/main/docs/01-business-overview.md">
+      <b>01 业务全景</b><span>五张图讲清保险资管怎么运转、人与系统如何分工</span>
+    </a>
+    <a class="card" href="https://github.com/Aayloo/insurance-am-agent/blob/main/docs/02-full-diagrams.md">
+      <b>02 完整图集</b><span>十张图，含价值链、ALM、归因报送全流程</span>
+    </a>
+    <a class="card" href="https://github.com/Aayloo/insurance-am-agent/blob/main/docs/03-agent-architecture.md">
+      <b>03 Agent 架构</b><span>A/B/C/D 四层、做几个 Agent、优化建议</span>
+    </a>
+    <a class="card" href="https://github.com/Aayloo/insurance-am-agent/blob/main/docs/04-roadmap.md">
+      <b>04 落地路线</b><span>机会矩阵、数据契约、合规红线、分阶段路线</span>
+    </a>
+  </div>
+
+  <p class="foot">
+    <a href="https://github.com/Aayloo/insurance-am-agent">GitHub 仓库</a> ·
+    MIT License · 仓库内为合成样例数据，不含任何机构内部数据
+  </p>
+</main>
+</body>
+</html>
