@@ -15,6 +15,8 @@
 负债与监管约束  →  一组投研 Agent 并行研究  →  在约束下求解配置  →  风控合规闸门  →  人签批
 ```
 
+> 🔎 **交互版架构图（可点开探索）**：[保险资管 Agent 四层架构 · 交互版](docs/diagrams/insurance-am-agent-architecture.html) —— 单文件 HTML，点节点看职责、沿箭头追上下游、按 `F` 进演示模式。预览见下方「图表总览」。
+
 ---
 
 ## 60 秒看懂
@@ -252,10 +254,11 @@ ins-am-agent --out examples/sample_report.md
 
 ## 图表总览
 
-全部图表使用 Mermaid 编写，GitHub 直接渲染，可复制到任何支持 Mermaid 的编辑器修改。
+全部图表使用 Mermaid 编写，GitHub 直接渲染，可复制到任何支持 Mermaid 的编辑器修改。表格第一行是 **Archify 生成的交互版 HTML**——单文件、可离线打开、节点可点、支持演示模式；同目录的源 JSON 改完重跑一次即可重生成。
 
 | 图 | 类型 | 说明 | 位置 |
 | --- | --- | --- | --- |
+| **A/B/C/D 四层架构（交互版）** | 交互式 HTML | 可点开探索：节点职责、上下游追踪、路径高亮、导出 PNG | [diagrams/](docs/diagrams/insurance-am-agent-architecture.html) |
 | A/B/C/D 四层架构 | 流程图 | 主架构与反馈闭环 | README 上方 · [03](docs/03-agent-architecture.md) |
 | 投研团队协作 | 流程图 | 四个研究员并行 + 交叉质询 + 人工复核 | [03](docs/03-agent-architecture.md) |
 | 演进路线 | 流程图 | 从 2 个 Agent 到 10 个的分阶段路径 | [03](docs/03-agent-architecture.md) |
@@ -274,6 +277,12 @@ ins-am-agent --out examples/sample_report.md
 | 投资生命周期 | 状态图 | 立项 → 存续 → 退出 | [02](docs/02-full-diagrams.md) |
 | Agent 编排一次配置建议 | 时序图 | 含辩论循环与风控否决分支 | [02](docs/02-full-diagrams.md) |
 
+### 交互版预览
+
+![保险资管 Agent 四层架构 · 交互版（A/B/C/D 四层 + 两条闭环 + 闸门与签批）](docs/diagrams/insurance-am-agent-architecture-preview.png)
+
+> 打开 [insurance-am-agent-architecture.html](docs/diagrams/insurance-am-agent-architecture.html) 可交互探索：点节点看职责与详情，沿箭头追上下游，按 `F` 进演示模式，按 `E` 导出 PNG 或分享卡。源文件是同目录的 `insurance-am-agent-architecture.json`。
+
 ---
 
 ## 文档导航
@@ -284,6 +293,7 @@ ins-am-agent --out examples/sample_report.md
 | [02 完整图集](docs/02-full-diagrams.md) | 十张图，含价值链、ALM、归因报送全流程 | 拆解 Agent 时查证 |
 | [03 Agent 架构](docs/03-agent-architecture.md) | A/B/C/D 四层、做几个 Agent、优化建议 | 技术方案评审 |
 | [04 落地路线](docs/04-roadmap.md) | 机会矩阵、数据契约、合规红线、分阶段路线 | 项目排期与立项 |
+| [交互版四层架构图](docs/diagrams/insurance-am-agent-architecture.html) | 可点开探索的单文件 HTML，附可重生成的源 JSON | 面试演示、对外分享 |
 
 ---
 
@@ -304,7 +314,7 @@ insurance-am-agent/
 │  └─ cli.py                 # 命令行入口
 ├─ data/sample_portfolio.json # 合成样例数据
 ├─ config/constraints.yaml    # 示例约束（示意值，非监管口径）
-├─ docs/                      # 业务框架与架构文档（含主视觉图 assets/hero.svg）
+├─ docs/                      # 业务框架与架构文档（主视觉图 assets/hero.svg、交互版图 diagrams/）
 ├─ examples/                  # 示例输出与审计日志
 └─ tests/                     # 单元测试
 ```

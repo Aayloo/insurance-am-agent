@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "保险资管 Agent 框架｜A / B / C / D 四层架构",
+    "locale": "zh-CN",
+    "output": ".archify/architecture-insurance-am-20261013-111947/insurance-am-agent-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "a1", "type": "database", "label": "A1 取数", "sublabel": "持仓 · 行情 · 负债", "pos": [1020, 40], "size": [160, 64] },
+    { "id": "a2", "type": "backend", "label": "A2 校验", "sublabel": "时点对齐 · 口径统一", "pos": [780, 40], "size": [160, 64] },
+    { "id": "a3", "type": "backend", "label": "A3 约束清单", "sublabel": "久期 · 资本 · 限额", "pos": [420, 40], "size": [160, 64] },
+
+    { "id": "b1", "type": "backend", "label": "B1 宏观与利率", "sublabel": "增长 · 通胀 · 曲线", "pos": [60, 200], "size": [160, 64] },
+    { "id": "b2", "type": "backend", "label": "B2 信用与利差", "sublabel": "评级 · 舆情 · 违约", "pos": [300, 200], "size": [160, 64] },
+    { "id": "b3", "type": "backend", "label": "B3 权益与行业", "sublabel": "估值 · 股息 · 景气", "pos": [540, 200], "size": [160, 64] },
+    { "id": "b4", "type": "backend", "label": "B4 另类与流动性", "sublabel": "不动产 · 基建 · 退出", "pos": [780, 200], "size": [160, 64] },
+    { "id": "b5", "type": "backend", "label": "B5 交叉质询", "sublabel": "挑战假设 · 最多 3 轮", "pos": [420, 380], "size": [160, 64] },
+
+    { "id": "c1", "type": "backend", "label": "C1 久期缺口", "sublabel": "现金流匹配", "pos": [780, 560], "size": [160, 64] },
+    { "id": "c2", "type": "backend", "label": "C2 情景与压力测试", "sublabel": "利率 · 信用 · 权益", "pos": [540, 560], "size": [160, 64] },
+    { "id": "c3", "type": "backend", "label": "C3 组合优化", "sublabel": "目标权重与偏离区间", "pos": [300, 560], "size": [160, 64] },
+    { "id": "c4", "type": "backend", "label": "C4 成本与理由", "sublabel": "换手成本 · 偏离理由", "pos": [60, 560], "size": [160, 64] },
+
+    { "id": "d1", "type": "security", "label": "D1 风控合规闸门", "sublabel": "比例 · 限额 · 关联交易", "pos": [60, 720], "size": [160, 64] },
+    { "id": "d3", "type": "backend", "label": "D3 报告生成", "sublabel": "建议书 · 投委会材料", "pos": [300, 720], "size": [160, 64] },
+    { "id": "d4", "type": "external", "label": "D4 人工签批", "sublabel": "投资经理 · 投委会", "pos": [540, 720], "size": [160, 64] },
+    { "id": "d5", "type": "database", "label": "D5 留痕与评估", "sublabel": "版本 · 复现 · 评分", "pos": [780, 720], "size": [160, 64] },
+
+    { "id": "d2", "type": "external", "label": "D2 例外处理", "sublabel": "降规模 · 升级审批", "pos": [60, 880], "size": [160, 64] },
+    { "id": "h1", "type": "external", "label": "人工下单与交收", "sublabel": "Agent 不接触交易接口", "pos": [780, 880], "size": [160, 64] }
+  ],
+  "connections": [
+    { "id": "a1-a2", "from": "a1", "to": "a2", "label": "原始数据" },
+    { "id": "a2-a3", "from": "a2", "to": "a3", "label": "数据包" },
+
+    { "id": "a3-b3", "from": "a3", "to": "b3", "label": "约束清单" },
+    { "id": "a3-b1", "from": "a3", "to": "b1" },
+    { "id": "a3-b2", "from": "a3", "to": "b2" },
+    { "id": "a3-b4", "from": "a3", "to": "b4" },
+
+    { "id": "b1-b5", "from": "b1", "to": "b5" },
+    { "id": "b2-b5", "from": "b2", "to": "b5" },
+    { "id": "b3-b5", "from": "b3", "to": "b5" },
+    { "id": "b4-b5", "from": "b4", "to": "b5" },
+
+    { "id": "b5-c1", "from": "b5", "to": "c1", "label": "观点集" },
+    { "id": "c1-c2", "from": "c1", "to": "c2", "label": "久期方案" },
+    { "id": "c2-c3", "from": "c2", "to": "c3", "label": "情景结果" },
+    { "id": "c3-c4", "from": "c3", "to": "c4", "label": "目标权重" },
+    { "id": "c4-d1", "from": "c4", "to": "d1", "label": "配置建议" },
+
+    { "id": "d1-d3", "from": "d1", "to": "d3", "label": "通过" },
+    { "id": "d1-d2", "from": "d1", "to": "d2", "label": "触限 · 超授权", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "id": "d2-d4", "from": "d2", "to": "d4", "label": "审批意见", "variant": "dashed", "fromSide": "right", "toSide": "left" },
+    { "id": "d3-d4", "from": "d3", "to": "d4", "label": "材料" },
+    { "id": "d4-d5", "from": "d4", "to": "d5", "label": "留痕" },
+    { "id": "d4-h1", "from": "d4", "to": "h1", "label": "签批后下单", "fromSide": "bottom", "toSide": "top" },
+
+    { "id": "h1-a1", "from": "h1", "to": "a1", "label": "成交与估值回写", "variant": "dashed", "fromSide": "right", "toSide": "top" },
+    { "id": "d5-a3", "from": "d5", "to": "a3", "label": "资本与考核反馈", "variant": "dashed", "fromSide": "left", "toSide": "top" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "四层各自管什么",
+      "items": [
+        "A 定边界与规则：负债、监管、限额先变成结构化输入，不放到最后检查",
+        "B 出观点与证据：宏观 / 信用 / 权益 / 另类并行研究，再交叉质询收敛",
+        "C 在约束下求解：久期缺口、压力测试、目标权重与偏离理由",
+        "D 闸门与留痕：合规校验、例外升级、人签批、审计可复现"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Agent 到底拆几个",
+      "items": [
+        "四条全中才拆：独立数据 / 独立方法 / 独立输出 / 独立责任人",
+        "起步 2-3 个 → 标准 5-7 个 → 完整 8-10 个，不一步到位",
+        "口径不一致比观点不新颖更致命，宁可合并不要分叉"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "人的两处不可替代",
+      "items": [
+        "签批：投资经理与投委会承担决策责任，Agent 只出建议",
+        "下单与交收：Agent 不接触交易接口，成交与估值回写 A1",
+        "每个观点必须带失效条件：数字由代码算，语言由模型组织"
+      ]
+    }
+  ]
+}
