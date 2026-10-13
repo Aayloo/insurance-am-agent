@@ -119,6 +119,21 @@ flowchart TB
 
 ### 为什么不是"一个万能 Agent"，也不是"十几个 Agent"
 
+### 代码分层（v0.2 重构后）
+
+架构图上的 A / B / C / D 是**概念分层**；代码里按「可复用抽象」重新切了一刀：A 层拆成数据与政策两层，并补上平台底座。字母保留为别名。
+
+| 层 | 名字 | 管什么 | 代码位置 |
+| --- | --- | --- | --- |
+| L0 | 平台底座 | 配置驱动的流水线 + 组件注册表（analysts / solvers / gates / adapters） | `ins_am_agent/platform/`、`pipeline.yaml` |
+| L1 | 数据与状态（A 前半） | 数据适配器、质量校验、组合状态与调仓流水 | `ins_am_agent/data_layer/` |
+| L2 | 约束与政策（A 后半） | 约束值的**唯一来源**、每条闸门规则的归属与触限处置、治理口径 | `ins_am_agent/policy/`、`config/constraints.yaml` |
+| L3 | 投研（B） | 研究员注册表并行出观点 + 交叉质询 + 失效条件 | `ins_am_agent/agents/b_research.py` |
+| L4 | 配置引擎（C） | 久期缺口、压力测试、目标权重与偏离理由 | `ins_am_agent/agents/c_allocation.py` |
+| L5 | 治理与交付（D） | 闸门（规则来自政策文件）、签批、报告、审计与留痕 | `ins_am_agent/agents/d_gate.py`、`d_report.py` |
+
+这一版解决三件事：**① 约束不再有两个来源**（以前政策文件和数据文件各写一份，靠人同步）；**② 加研究员 / 换引擎 / 加闸门只改配置**（`pipeline.yaml` 里 `analysts: [macro, credit]` 就是起步档）；**③ 组合开始有状态**（调仓流水可追溯，为回测与归因留好挂点）。
+
 **拆分规则**：某环节同时满足 **独立数据、独立方法、独立输出、独立责任人** 四条，才值得拆成独立 Agent；四条不全则合并。
 
 | 档位 | 组成 | 数量 | 适用阶段 |
@@ -234,6 +249,15 @@ ins-am-agent --out examples/sample_report.md
 
 > 内置的是**合成样例数据**（`data/sample_portfolio.json`），不含任何机构内部数据。替换为自己的数据文件即可接入真实流程：`python -m ins_am_agent --data your_portfolio.json`。
 
+流水线由 [`pipeline.yaml`](pipeline.yaml) 定义，约束与政策由 [`config/constraints.yaml`](config/constraints.yaml) 提供——**约束只有一个来源**，数据文件里不再放限额。
+
+```bash
+# 换数据 / 换政策 / 换流水线，都不需要改代码
+python -m ins_am_agent --data your_portfolio.json --policy config/constraints.yaml
+python -m ins_am_agent --pipeline pipeline.yaml
+python -m ins_am_agent --list-components    # 列出注册表里可用的组件，看清有哪些挂点
+```
+
 ---
 
 ## 示例输出
@@ -301,22 +325,26 @@ ins-am-agent --out examples/sample_report.md
 
 ```text
 insurance-am-agent/
-├─ ins_am_agent/             # 零依赖的 Python 实现
+├─ pipeline.yaml              # L0 流水线定义：跑哪些阶段、用什么组件
+├─ config/constraints.yaml    # L2 约束与政策（唯一来源：约束值 + 规则归属 + 治理口径）
+├─ ins_am_agent/              # 零依赖的 Python 实现
+│  ├─ platform/               # L0 平台底座：注册表 · 流水线执行器 · YAML 子集解析
+│  ├─ data_layer/             # L1 数据与状态：适配器 · 质量校验 · 组合状态
+│  ├─ policy/                 # L2 约束与政策：装载与严格校验（fail closed）
 │  ├─ agents/
-│  │  ├─ a_data.py           # A1 取数 · A2 校验 · A3 约束清单
-│  │  ├─ b_research.py       # B1-B5 研究员与交叉质询
-│  │  ├─ c_allocation.py     # C1-C4 久期 · 压力测试 · 优化 · 偏离
-│  │  ├─ d_gate.py           # D1-D2 风控合规闸门
-│  │  └─ d_report.py         # D3 · D5 报告与审计留痕
-│  ├─ orchestrator.py        # A → B → C → D 编排
-│  ├─ models.py              # 数据结构定义
-│  ├─ llm.py                 # 可选 LLM 接口（默认关闭，不影响运行）
-│  └─ cli.py                 # 命令行入口
-├─ data/sample_portfolio.json # 合成样例数据
-├─ config/constraints.yaml    # 示例约束（示意值，非监管口径）
+│  │  ├─ b_research.py        # L3 研究员注册表 + 交叉质询
+│  │  ├─ c_allocation.py      # L4 配置引擎（规则实现，可替换为求解器）
+│  │  ├─ d_gate.py            # L5 闸门：标签归属与触限处置读政策文件
+│  │  ├─ d_report.py          # L5 报告与审计留痕（含政策指纹与状态指纹）
+│  │  └─ a_data.py            # 兼容层：旧导入路径仍可用，新代码请用 data_layer / policy
+│  ├─ orchestrator.py         # 读流水线定义并执行
+│  ├─ models.py               # 数据结构定义
+│  ├─ llm.py                  # 可选 LLM 接口（默认关闭，不影响运行）
+│  └─ cli.py                  # 命令行入口（--pipeline / --policy / --list-components）
+├─ data/sample_portfolio.json # 合成样例数据（只放数据，不含约束）
 ├─ docs/                      # 业务框架与架构文档（主视觉图 assets/hero.svg、交互版图 diagrams/）
 ├─ examples/                  # 示例输出与审计日志
-└─ tests/                     # 单元测试
+└─ tests/                     # 单元测试（32 项）
 ```
 
 ---
@@ -333,6 +361,9 @@ insurance-am-agent/
 
 ## 路线图
 
+- [x] L0 平台底座：配置驱动流水线 + 组件注册表（加研究员 / 换引擎只改配置）
+- [x] L1 / L2 拆分：数据与状态 · 约束与政策（约束收敛为单一来源，装载 fail closed）
+- [x] L1 组合状态：调仓流水与状态指纹（回测与归因的挂点）
 - [x] A 层：数据校验 + 约束清单生成
 - [x] B 层：四类研究员 Agent + 交叉质询
 - [x] C 层：久期缺口、压力测试、配置建议、换手成本

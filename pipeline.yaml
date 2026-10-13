@@ -1,0 +1,51 @@
+# L0 平台底座：流水线定义
+#
+# 本文件说明「跑哪些阶段、按什么顺序、用哪个组件」，编排代码读它执行。
+# 换一个研究员、换一个求解器、加一条闸门，都只改本文件（+ 注册表），不动编排代码。
+#
+# 三档位对应 README「Agent 数量」一节：
+#   起步档：analysts 只留 [macro, credit]，可去掉 position/gate/report 之后的阶段
+#   标准档：analysts: [macro, credit, equity, alternative]
+#   完整档：标准档 + 组合状态 + 闸门 + 报告（当前默认）
+
+version: 1
+name: "保险资管配置建议 · 完整档"
+
+vars:
+  data: "data/sample_portfolio.json"
+  policy: "config/constraints.yaml"
+
+stages:
+  - id: snapshot
+    uses: data.json
+    with:
+      path: "${data}"
+
+  - id: quality
+    uses: data.quality
+
+  - id: policy
+    uses: policy.file
+    with:
+      path: "${policy}"
+
+  - id: bundle
+    uses: context.assemble
+
+  - id: research
+    uses: research.team
+    with:
+      analysts: [macro, credit, equity, alternative]
+      challenger: conflict_rules
+
+  - id: proposal
+    uses: allocation.rule_based
+
+  - id: position
+    uses: portfolio.state
+
+  - id: gate
+    uses: gate.compliance
+
+  - id: report
+    uses: report.markdown

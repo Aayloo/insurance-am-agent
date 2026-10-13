@@ -21,6 +21,23 @@ def _worst(statuses: List[str]) -> str:
     return worst
 
 
+def _rule_label(bundle: Dict[str, Any], key: str, default: str) -> str:
+    policy = bundle.get("policy")
+    rule = policy.rule(key) if policy is not None else None
+    return rule.label if rule and rule.label else default
+
+
+def _rule_owner(bundle: Dict[str, Any], key: str, default: str) -> str:
+    policy = bundle.get("policy")
+    return policy.owner_of(key, default) if policy is not None else default
+
+
+def _rule_status(bundle: Dict[str, Any], key: str, default: str) -> str:
+    """触限后的处置方式来自政策文件（约定「降规模 / 升级审批 / 否决」）。"""
+    policy = bundle.get("policy")
+    return policy.on_breach_of(key, default) if policy is not None else default
+
+
 def run(bundle: Dict[str, Any], proposal) -> GateResult:
     holdings = bundle["holdings"]
     constraints = bundle["constraints"]
@@ -39,18 +56,18 @@ def run(bundle: Dict[str, Any], proposal) -> GateResult:
     # 1) 权益上限
     equity = class_total("equity", targets) * 100
     if equity > constraints.equity_cap_pct + 1e-6:
-        equity_status = "降规模"
+        equity_status = _rule_status(bundle, "equity_cap", "降规模")
     elif abs(equity - constraints.equity_cap_pct) < 1e-6:
         equity_status = "提示"
     else:
         equity_status = "通过"
     items.append(
         GateItem(
-            rule="权益类资产上限",
+            rule=_rule_label(bundle, "equity_cap", "权益类资产上限"),
             limit="{:.1f}%".format(constraints.equity_cap_pct),
             actual="{:.1f}%".format(equity),
             status=equity_status,
-            owner="合规 Agent 初筛 · 风控复核",
+            owner=_rule_owner(bundle, "equity_cap", "合规 Agent 初筛 · 风控复核"),
         )
     )
 
@@ -58,11 +75,15 @@ def run(bundle: Dict[str, Any], proposal) -> GateResult:
     alternative = class_total("alternative", targets) * 100
     items.append(
         GateItem(
-            rule="另类资产上限",
+            rule=_rule_label(bundle, "alternative_cap", "另类资产上限"),
             limit="{:.1f}%".format(constraints.alternative_cap_pct),
             actual="{:.1f}%".format(alternative),
-            status="通过" if alternative <= constraints.alternative_cap_pct + 1e-6 else "降规模",
-            owner="合规 Agent 初筛",
+            status=(
+                "通过"
+                if alternative <= constraints.alternative_cap_pct + 1e-6
+                else _rule_status(bundle, "alternative_cap", "降规模")
+            ),
+            owner=_rule_owner(bundle, "alternative_cap", "合规 Agent 初筛"),
         )
     )
 
@@ -80,36 +101,36 @@ def run(bundle: Dict[str, Any], proposal) -> GateResult:
         single_status = "降规模"
         note = "{}({}%) 存量超限，本期目标已压回".format(current_best.name, round(current_peak, 1))
     elif target_peak > cap_single + 1e-6:
-        single_status = "否决"
+        single_status = _rule_status(bundle, "single_issuer_cap", "否决")
         note = "{}({}%) 仍超限".format(target_best.name, round(target_peak, 1))
     else:
         single_status = "通过"
         note = "最大单一主体 {}%".format(round(target_peak, 1))
     items.append(
         GateItem(
-            rule="单一主体集中度",
+            rule=_rule_label(bundle, "single_issuer_cap", "单一主体集中度"),
             limit="{:.1f}%".format(cap_single),
             actual=note,
             status=single_status,
-            owner="风控 Agent 初筛",
+            owner=_rule_owner(bundle, "single_issuer_cap", "风控 Agent 初筛"),
         )
     )
 
     # 4) 流动性下限
     liquidity = class_total("cash", targets) * 100
     if liquidity < constraints.min_liquidity_pct - 1e-6:
-        liquidity_status = "否决"
+        liquidity_status = _rule_status(bundle, "liquidity_floor", "否决")
     elif liquidity < constraints.min_liquidity_pct + 1.0:
         liquidity_status = "提示"
     else:
         liquidity_status = "通过"
     items.append(
         GateItem(
-            rule="流动性下限",
+            rule=_rule_label(bundle, "liquidity_floor", "流动性下限"),
             limit="{:.1f}%".format(constraints.min_liquidity_pct),
             actual="{:.1f}%".format(liquidity),
             status=liquidity_status,
-            owner="风控 Agent 初筛",
+            owner=_rule_owner(bundle, "liquidity_floor", "风控 Agent 初筛"),
         )
     )
 
@@ -119,25 +140,29 @@ def run(bundle: Dict[str, Any], proposal) -> GateResult:
     if abs(gap) <= tolerance:
         gap_status = "通过"
     else:
-        gap_status = "升级审批"
+        gap_status = _rule_status(bundle, "duration_gap", "升级审批")
     items.append(
         GateItem(
-            rule="久期缺口容忍度",
+            rule=_rule_label(bundle, "duration_gap", "久期缺口容忍度"),
             limit="±{:.1f} 年".format(tolerance),
             actual="{:+.2f} 年".format(gap),
             status=gap_status,
-            owner="ALM Agent 测算 · 投委会审批",
+            owner=_rule_owner(bundle, "duration_gap", "ALM Agent 测算 · 投委会审批"),
         )
     )
 
     # 6) 换手上限
     items.append(
         GateItem(
-            rule="单期换手上限",
+            rule=_rule_label(bundle, "turnover_cap", "单期换手上限"),
             limit="{:.1f}%".format(constraints.max_turnover_pct),
             actual="{:.2f}%".format(proposal.turnover_pct),
-            status="通过" if proposal.turnover_pct <= constraints.max_turnover_pct else "升级审批",
-            owner="投资经理复核",
+            status=(
+                "通过"
+                if proposal.turnover_pct <= constraints.max_turnover_pct
+                else _rule_status(bundle, "turnover_cap", "升级审批")
+            ),
+            owner=_rule_owner(bundle, "turnover_cap", "投资经理复核"),
         )
     )
 
@@ -145,11 +170,11 @@ def run(bundle: Dict[str, Any], proposal) -> GateResult:
     spread = proposal.yield_after - proposal.liability_cost_pct
     items.append(
         GateItem(
-            rule="收益与负债成本利差",
+            rule=_rule_label(bundle, "yield_over_cost", "收益与负债成本利差"),
             limit="≥ 0（负债成本 {:.2f}%）".format(proposal.liability_cost_pct),
             actual="{:+.2f}%".format(spread),
-            status="通过" if spread >= 0 else "提示",
-            owner="投资经理与精算复核",
+            status="通过" if spread >= 0 else _rule_status(bundle, "yield_over_cost", "提示"),
+            owner=_rule_owner(bundle, "yield_over_cost", "投资经理与精算复核"),
         )
     )
 

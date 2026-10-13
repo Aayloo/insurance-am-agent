@@ -9,7 +9,7 @@ B5 交叉质询（挑战假设，输出分歧点而非继续辩论）。
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from ..models import Opinion
 
@@ -146,14 +146,49 @@ def _challenger(opinions: List[Opinion]) -> Dict[str, Any]:
     }
 
 
-def run(bundle: Dict[str, Any]) -> Dict[str, Any]:
-    opinions = [
-        _macro_analyst(bundle),
-        _credit_analyst(bundle),
-        _equity_analyst(bundle),
-        _alternative_analyst(bundle),
-    ]
+ANALYSTS = {
+    "macro": _macro_analyst,
+    "credit": _credit_analyst,
+    "equity": _equity_analyst,
+    "alternative": _alternative_analyst,
+}
+
+DEFAULT_ANALYSTS = ("macro", "credit", "equity", "alternative")
+
+CHALLENGERS = {
+    "conflict_rules": _challenger,
+}
+
+
+def run_team(
+    bundle: Dict[str, Any],
+    analysts: Optional[List[str]] = None,
+    challenger: str = "conflict_rules",
+) -> Dict[str, Any]:
+    """按名单运行研究员，再跑一次交叉质询。
+
+    名单来自流水线配置，所以「起步档跑两个研究员、完整档跑四个」只是配置差异，
+    不是代码差异。未知名字直接报错，不做静默跳过。
+    """
+    names = list(analysts) if analysts else list(DEFAULT_ANALYSTS)
+    unknown = [name for name in names if name not in ANALYSTS]
+    if unknown:
+        raise ValueError(
+            "未知研究员：{}；可用研究员：{}".format("、".join(unknown), "、".join(sorted(ANALYSTS)))
+        )
+    challenger_fn = CHALLENGERS.get(challenger)
+    if challenger_fn is None:
+        raise ValueError(
+            "未知质询器：{}；可用质询器：{}".format(challenger, "、".join(sorted(CHALLENGERS)))
+        )
+    opinions = [ANALYSTS[name](bundle) for name in names]
     return {
         "opinions": opinions,
-        "challenge": _challenger(opinions),
+        "challenge": challenger_fn(opinions),
+        "analysts": names,
     }
+
+
+def run(bundle: Dict[str, Any]) -> Dict[str, Any]:
+    """兼容入口：等价于 run_team(bundle)。"""
+    return run_team(bundle)

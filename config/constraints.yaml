@@ -1,12 +1,15 @@
-# 约束清单模板（示意值，非监管口径）
+# 保险资管约束与政策 —— 约束的唯一来源（L2）
 #
-# 说明：本文件是人类可读的规格说明；零依赖的 Demo 直接从
-# data/sample_portfolio.json 的 "constraints" 字段读取同名参数。
-# 接入真实流程时，请把内部制度与最新监管文件的口径写入此处与数据文件，
-# 并标注生效日期与适用主体。
+# 本文件是 L2「约束与政策」层的输入：约束值、每条闸门规则的归属与触限处置、
+# 治理口径都在这里定义，代码只读不写。数据文件（data/*.json）只放数据。
+#
+# 接入真实流程时：把内部制度与最新监管文件的口径写进本文件，并更新 effective_date。
+# 装载时会做严格校验：字段缺失、取值非法、规则名不认识都会直接报错，不做默认值兜底。
 
+version: 1
 effective_date: "2026-08-31"
 applies_to: "示例组合（合成数据）"
+source: "示意值，非监管口径；实际按偿付能力分档与内部授权制度确定"
 
 constraints:
   equity_cap_pct: 20.0            # 权益类资产上限，实际按偿付能力分档
@@ -16,8 +19,38 @@ constraints:
   duration_tolerance_years: 1.5   # 久期缺口容忍度（年）
   max_turnover_pct: 15.0          # 单期换手上限
 
+# 闸门规则的政策元数据：D 层按 key 取「归属」与「触限处置」，不再硬编码
+rules:
+  equity_cap:
+    label: "权益类资产上限"
+    owner: "合规 Agent 初筛 · 风控复核"
+    on_breach: "降规模"
+  alternative_cap:
+    label: "另类资产上限"
+    owner: "合规 Agent 初筛"
+    on_breach: "降规模"
+  single_issuer_cap:
+    label: "单一主体集中度"
+    owner: "风控 Agent 初筛"
+    on_breach: "否决"
+  liquidity_floor:
+    label: "流动性下限"
+    owner: "风控 Agent 初筛"
+    on_breach: "否决"
+  duration_gap:
+    label: "久期缺口容忍度"
+    owner: "ALM Agent 测算 · 投委会审批"
+    on_breach: "升级审批"
+  turnover_cap:
+    label: "单期换手上限"
+    owner: "投资经理复核"
+    on_breach: "升级审批"
+  yield_over_cost:
+    label: "收益与负债成本利差"
+    owner: "投资经理与精算复核"
+    on_breach: "提示"
+
 governance:
-  equity_cap_owner: "合规 Agent 初筛，风控复核"
-  duration_owner: "ALM Agent 测算，投委会审批"
-  order_execution: "人工执行，Agent 不接触交易接口"
+  decision_owner: "投资经理与投委会承担决策责任，Agent 只出建议"
   sign_off: "投资经理、风控合规、投委会"
+  order_execution: "人工执行，Agent 不接触交易接口"

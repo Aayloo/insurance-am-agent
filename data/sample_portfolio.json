@@ -15,14 +15,6 @@
     "equity_dividend_yield": 5.20,
     "rate_shock_bp": 50
   },
-  "constraints": {
-    "equity_cap_pct": 20.0,
-    "alternative_cap_pct": 15.0,
-    "single_issuer_cap_pct": 5.0,
-    "min_liquidity_pct": 5.0,
-    "duration_tolerance_years": 1.5,
-    "max_turnover_pct": 15.0
-  },
   "holdings": [
     {
       "name": "国债与政金债",
