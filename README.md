@@ -15,7 +15,7 @@
 负债与监管约束  →  一组投研 Agent 并行研究  →  在约束下求解配置  →  风控合规闸门  →  人签批
 ```
 
-> 🔎 **交互版架构图（可点开探索）**：[保险资管 Agent 四层架构 · 交互版](docs/diagrams/insurance-am-agent-architecture.html) —— 单文件 HTML，点节点看职责、沿箭头追上下游、按 `F` 进演示模式。预览见下方「图表总览」。
+> 🔎 **交互版架构图（点开即用）**：**[打开交互版 →](https://raw.githack.com/Aayloo/insurance-am-agent/main/docs/diagrams/insurance-am-agent-architecture.html)** —— 由第三方 CDN 实时渲染仓库里的单文件 HTML，点开就是可交互界面：点节点看职责、沿箭头追上下游、按 `F` 进演示模式、按 `E` 导出 PNG。该 HTML 也在仓库里：[docs/diagrams/](docs/diagrams/insurance-am-agent-architecture.html)（GitHub 不执行 HTML，下载到本地双击同样可以交互）。预览见下方「图表总览」。
 
 ---
 
@@ -306,6 +306,10 @@ python -m ins_am_agent --list-components    # 列出注册表里可用的组件�
 ![保险资管 Agent 四层架构 · 交互版（A/B/C/D 四层 + 两条闭环 + 闸门与签批）](docs/diagrams/insurance-am-agent-architecture-preview.png)
 
 > 打开 [insurance-am-agent-architecture.html](docs/diagrams/insurance-am-agent-architecture.html) 可交互探索：点节点看职责与详情，沿箭头追上下游，按 `F` 进演示模式，按 `E` 导出 PNG 或分享卡。源文件是同目录的 `insurance-am-agent-architecture.json`。
+
+**在线打开（点开即交互）**：<https://raw.githack.com/Aayloo/insurance-am-agent/main/docs/diagrams/insurance-am-agent-architecture.html>
+
+> 这条链接由第三方 CDN 把仓库里的 HTML 当作网页渲染（GitHub 自己不会执行 HTML）。想换成自己的固定域名，可在 Settings → Pages 里把 Source 设为 **GitHub Actions**，之后本站会自动部署到 `https://aayloo.github.io/insurance-am-agent/`。
 
 ---
 
