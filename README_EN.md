@@ -1,12 +1,12 @@
 # Insurance AM Agent
 
-> **In one line**: a multi-agent research framework for **insurance asset management** — structured like TradingAgents, but it starts from **liabilities** instead of prices, and ends with a **signed decision memo** instead of a trade order.
+> **In one line**: a multi-agent research framework for **insurance asset management**. It starts from **liabilities** instead of price signals, and ends with a **signed decision memo** instead of a trade order — turning "fetch → research → allocate → compliance check → report" into a reproducible pipeline, while sign-off and order execution stay with people.
 
 [中文文档](README.md) ｜ [License: MIT](LICENSE)
 
-## Is it "TradingAgents for insurance asset management"?
+## How it differs from general agent frameworks
 
-Yes in skeleton, no in constraints.
+The orchestration skeleton is generic; the constraints are specific to this domain.
 
 | Dimension | Typical trading agents | This project |
 | --- | --- | --- |

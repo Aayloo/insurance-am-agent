@@ -4,12 +4,12 @@
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Dependencies: zero](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)](#快速开始)
 [![tests](https://github.com/Aayloo/insurance-am-agent/actions/workflows/tests.yml/badge.svg)](https://github.com/Aayloo/insurance-am-agent/actions/workflows/tests.yml)
-[![Status: v0.1 runnable](https://img.shields.io/badge/status-v0.1%20runnable-yellow.svg)](#路线图)
+[![Status: v0.2 runnable](https://img.shields.io/badge/status-v0.2%20runnable-yellow.svg)](#路线图)
 [![Docs: 中文 / English](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87%20%2F%20English-informational.svg)](docs/)
 
 ![Insurance AM Agent 四层架构](docs/assets/hero.svg)
 
-> **一句话**：这是一个**面向保险资管的投研 Agent 框架**——结构上像 TradingAgents 那样由一组研究员 Agent 协作，但**起点不是行情，而是负债；终点不是交易单，而是带签批与留痕的决策建议。**
+> **一句话**：这是一个**面向保险资管的投研 Agent 框架**——**起点不是行情，而是负债；终点不是交易单，而是一份带签批与留痕的决策建议。** 它把「取数 → 研究 → 配置 → 合规校验 → 出报告」这条链路变成可复现的流程，人的签批与下单两处责任不动。
 
 ```
 负债与监管约束  →  一组投研 Agent 并行研究  →  在约束下求解配置  →  风控合规闸门  →  人签批
@@ -19,21 +19,47 @@
 
 ---
 
+## 输出长什么样（点开看完整版）
+
+不用先跑代码，仓库里就放着几次真实运行的产物：
+
+| 输出 | 里面有什么 | 点开看 |
+| --- | --- | --- |
+| **决策建议书** | 数据质量、约束清单、四类研究观点（含失效条件）、配置建议、压力测试、闸门结论、待签批事项、留痕 | [examples/sample_report.md](examples/sample_report.md) |
+| **走查式回测报告** | 24 期逐期明细、策略 vs 不调仓基准、收益归因、成本与换手 | [examples/backtest_report.md](examples/backtest_report.md) |
+| **交互式架构图** | 可点开的单文件 HTML：节点职责、上下游追踪、演示模式 | [打开 →](https://raw.githack.com/Aayloo/insurance-am-agent/main/docs/diagrams/insurance-am-agent-architecture.html) |
+| **审计日志** | 机器可读的留痕：版本、输入指纹、政策指纹、组合状态指纹、闸门逐项结论 | [examples/audit_log.example.json](examples/audit_log.example.json) |
+
+建议书里「闸门结论」那节长这样（表格是完整输出的一小段，全文见上表链接）：
+
+```text
+**闸门结论：升级审批** —— 存在超出授权范围的事项，需上会审批
+
+| 校验项 | 限额 | 实际 | 结论 | 责任 |
+| 权益类资产上限 | 20.0% | 20.0% | 提示 | 合规 Agent 初筛 · 风控复核 |
+| 单一主体集中度 | 5.0% | 城投债 A(6.0%) 存量超限，本期目标已压回 | 降规模 | 风控 Agent 初筛 |
+| 久期缺口容忍度 | ±1.5 年 | -3.55 年 | 升级审批 | ALM Agent 测算 · 投委会审批 |
+| 收益与负债成本利差 | ≥ 0（负债成本 3.20%）| +0.10% | 通过 | 投资经理与精算复核 |
+```
+
+---
+
 ## 60 秒看懂
 
 | 你想知道 | 答案 |
 | --- | --- |
 | 这是什么 | 保险资管的投研 Agent 框架 + 可运行的零依赖 Demo |
-| 像 TradingAgents 吗 | 骨架像（多角色、辩论、审批），约束不同（负债、监管、会计三道硬约束） |
+| 借用了什么 | 只借多角色协作的编排骨架；约束（负债、监管、会计三道硬约束）、产出形态与责任归属都是本场景重新定义的 |
 | 做几个 Agent | 起步 2-3 个，标准 5-7 个，完整 8-10 个；拆不拆看"独立数据 / 方法 / 输出 / 责任人" |
 | 能自动下单吗 | 不能，也不应该。下单与签批留给人 |
-| 现在能跑吗 | 能。`python -m ins_am_agent`，8 个单元测试全绿 |
+| 现在能跑吗 | 能。`python -m ins_am_agent`；48 个单元测试在 Python 3.9 / 3.13 上全绿，另有一条回测流水线 |
 
 ---
 
 ## 目录
 
-- [这是不是"保险资管版的 TradingAgents"？](#这是不是保险资管版的-tradingagents)
+- [输出长什么样](#输出长什么样点开看完整版)
+- [和通用 agent 框架的差别](#和通用-agent-框架的差别)
 - [架构：A / B / C / D 四层](#架构a--b--c--d-四层)
 - [一次运行会发生什么：现状 vs 目标态](#一次运行会发生什么现状-vs-目标态)
 - [图表总览](#图表总览)
@@ -47,11 +73,11 @@
 
 ---
 
-## 这是不是"保险资管版的 TradingAgents"？
+## 和通用 agent 框架的差别
 
-**是，但有三处根本不同。** 骨架相同（多角色协作、观点辩论、闸门审批），约束完全不同。
+**编排骨架是通用的，约束是本项目的。** 多角色协作、观点辩论、闸门审批这套骨架，主流做法大同小异；真正的差别在三处约束上。
 
-| 维度 | Trading Agent（GitHub 主流做法） | 本项目（保险资管） |
+| 维度 | 面向二级市场交易的 agent（常见做法） | 本项目（保险资管） |
 | --- | --- | --- |
 | 决策起点 | 行情信号 | **负债**：久期、成本、退保与赔付假设 |
 | 硬约束 | 资金与风控限额 | **监管比例 + 偿付能力资本 + 会计准则** |
@@ -408,7 +434,7 @@ insurance-am-agent/
 
 ## 参考项目
 
-本项目在"多角色协作 + 观点质询 + 闸门审批"的骨架设计上，参考了以下开源工作；差异在于本项目把**负债与监管合规**作为第一性约束：
+本项目只借鉴下列工作的**编排骨架**（多角色协作、观点质询、闸门审批），不复制其代码、数据结构或产品形态；约束、产出与责任归属全部按保险资管场景重新定义。这也是本项目的边界：**借鉴的是结构，不是内容。**
 
 | 项目 | 借鉴点 |
 | --- | --- |
