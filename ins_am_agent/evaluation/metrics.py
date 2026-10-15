@@ -16,8 +16,15 @@ def stdev(values: Sequence[float]) -> float:
     count = len(values)
     if count < 2:
         return 0.0
+    # 全常数序列直接返回 0：不同 Python 版本对 sum/count 的舍入不同，
+    # 常数序列算出来的均值可能不是精确值，会让方差变成极小正数，
+    # 进而在夏普里被放大成天文数字（3.9 与 3.13 的表现就不一致）。
+    if all(value == values[0] for value in values):
+        return 0.0
     mean = sum(values) / count
     variance = sum((value - mean) ** 2 for value in values) / (count - 1)
+    if variance <= 0:
+        return 0.0
     return sqrt(variance)
 
 
