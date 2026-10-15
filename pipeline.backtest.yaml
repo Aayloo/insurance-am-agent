@@ -1,0 +1,30 @@
+# L0 平台底座：回测流水线
+#
+# 与主流水线的区别：数据源换成多期历史（默认合成、固定种子可复现），
+# 引擎换成走查式回测，输出净值曲线、归因与「策略 vs 不调仓」对照。
+
+version: 1
+name: "走查式回测 · 合成历史"
+
+vars:
+  policy: "config/constraints.yaml"
+
+stages:
+  - id: policy
+    uses: policy.file
+    with:
+      path: "${policy}"
+
+  - id: history
+    uses: data.synthetic
+    with:
+      periods: 24
+      seed: 20260831
+
+  - id: backtest
+    uses: backtest.walk_forward
+    with:
+      include_gate: true
+
+  - id: report
+    uses: report.backtest

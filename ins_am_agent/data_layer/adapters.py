@@ -93,13 +93,30 @@ def build_market(raw: Dict[str, Any]) -> MarketView:
         spread_percentile=int(node["spread_percentile"]),
         equity_dividend_yield=float(node["equity_dividend_yield"]),
         rate_shock_bp=int(node["rate_shock_bp"]),
+        equity_return_pct=float(node.get("equity_return_pct", 0.0)),
+        alternative_return_pct=float(node.get("alternative_return_pct", 0.0)),
     )
+
+
+def load_json_history(path: str) -> List[Dict[str, Any]]:
+    """读取多期快照序列（回测输入）：{"periods": [ ...单期数据结构... ]}"""
+    with open(path, "r", encoding="utf-8") as handle:
+        document = json.load(handle)
+    periods = document.get("periods")
+    if not isinstance(periods, list) or not periods:
+        raise ValueError("历史数据文件必须包含非空的 periods 数组：{}".format(path))
+    return periods
 
 
 def load_json_snapshot(path: str) -> PortfolioSnapshot:
     """从 JSON 文件读取快照（零依赖的默认适配器）。"""
     with open(path, "r", encoding="utf-8") as handle:
         raw = json.load(handle)
+    return snapshot_from_raw(raw, path=str(path))
+
+
+def snapshot_from_raw(raw: Dict[str, Any], path: str = "") -> PortfolioSnapshot:
+    """把一份原始数据字典装配成快照（回测逐期复用同一入口）。"""
     return PortfolioSnapshot(
         as_of=raw.get("as_of", ""),
         currency=raw.get("currency", ""),
@@ -107,7 +124,7 @@ def load_json_snapshot(path: str) -> PortfolioSnapshot:
         liability=build_liability(raw),
         market=build_market(raw),
         raw=raw,
-        path=str(path),
+        path=path,
     )
 
 

@@ -39,6 +39,9 @@ class MarketView:
     spread_percentile: int
     equity_dividend_yield: float
     rate_shock_bp: int
+    # 回测用的期间收益（单期快照没有这两项，默认 0，不影响单期流水线）
+    equity_return_pct: float = 0.0
+    alternative_return_pct: float = 0.0
 
 
 @dataclass

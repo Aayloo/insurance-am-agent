@@ -44,6 +44,8 @@ def load_result(
         "gate": context.get("gate"),
         "policy": context.get("policy"),
         "position": context.get("position"),
+        "history": context.get("history"),
+        "backtest": context.get("backtest"),
         "report": report.get("report", ""),
         "audit": report.get("audit", {}),
         "pipeline": context.get("_pipeline", {}),
@@ -77,18 +79,51 @@ def write_outputs(
 
 
 def summarize(result: Dict[str, Any]) -> str:
+    pipeline = result.get("pipeline") or {}
+    lines = [
+        "流水线：{}（阶段 {} 个）".format(
+            pipeline.get("name") or "未命名", len(pipeline.get("executed", []))
+        )
+    ]
+    policy = result.get("policy")
+    if policy is not None:
+        lines.append("政策：生效日 {}，指纹 {}".format(policy.effective_date, policy.fingerprint))
+
+    backtest = result.get("backtest")
+    if backtest:
+        strategy = backtest["metrics"]
+        baseline = backtest["baseline_metrics"]
+        lines.extend(
+            [
+                "回测区间：{} → {}（收益期 {}）".format(
+                    backtest["window"]["start"],
+                    backtest["window"]["end"],
+                    backtest["window"]["return_periods"],
+                ),
+                "调仓策略：累计 {:+.2f}%，年化 {:+.2f}%，最大回撤 {:.2f}%，夏普 {:.2f}".format(
+                    strategy["total_return"] * 100,
+                    strategy["annualized_return"] * 100,
+                    strategy["max_drawdown"] * 100,
+                    strategy["sharpe"],
+                ),
+                "不调仓基准：累计 {:+.2f}%，年化 {:+.2f}%".format(
+                    baseline["total_return"] * 100, baseline["annualized_return"] * 100
+                ),
+                "超额：{:+.2f}%（累计成本 {:.1f}bp，累计换手 {:.1f}%）".format(
+                    backtest["excess_total_return"] * 100,
+                    backtest["cost_total_bp"],
+                    backtest["turnover_total_pct"],
+                ),
+            ]
+        )
+        return "\n".join(lines)
+
+    if result.get("proposal") is None:
+        return "\n".join(lines)
+
     proposal = result["proposal"]
     gate = result["gate"]
     bundle = result["bundle"]
-    policy = result.get("policy")
-    pipeline = result.get("pipeline") or {}
-    lines = [
-        "流水线：{}（阶段 {} 个）".format(pipeline.get("name") or "未命名", len(pipeline.get("executed", []))),
-    ]
-    if policy is not None:
-        lines.append(
-            "政策：生效日 {}，指纹 {}".format(policy.effective_date, policy.fingerprint)
-        )
     lines.extend(
         [
             "数据时点：{}（质量问题 {} 项）".format(bundle["as_of"], len(bundle["quality"])),

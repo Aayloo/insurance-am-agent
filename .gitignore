@@ -8,3 +8,4 @@ venv/
 .vscode/
 .DS_Store
 examples/audit_log.json
+examples/backtest_audit.json

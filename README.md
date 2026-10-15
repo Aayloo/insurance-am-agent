@@ -258,6 +258,27 @@ python -m ins_am_agent --pipeline pipeline.yaml
 python -m ins_am_agent --list-components    # 列出注册表里可用的组件，看清有哪些挂点
 ```
 
+### 回测与评估
+
+每期都完整跑一遍「研究 → 配置 → 闸门」，再和不调仓基准对照，回答那个最容易被追问的问题：**这套调仓逻辑比什么都不做差在哪。**
+
+```bash
+python -m ins_am_agent --pipeline pipeline.backtest.yaml --out examples/backtest_report.md
+```
+
+在仓库自带的合成历史（24 期，固定种子可逐字复算）上，报告的结论是这样的：
+
+| 指标 | 调仓策略 | 不调仓基准 |
+| --- | --- | --- |
+| 累计收益 | -1.00% | +0.87% |
+| 年化波动 | 4.15% | 3.98% |
+| 最大回撤 | -3.48% | -3.35% |
+| 平均久期缺口 | **-2.80 年** | -4.41 年 |
+
+三句话读这份报告：**① 策略把久期缺口从 -4.41 年收到 -2.80 年，这是它该做的事；② 但累计收益跑输 1.87 个百分点——主要不是成本（只有 2.4bp），而是它在样本里多承担的利率风险没有拿到补偿；③ 24 期闸门全部落在「升级审批」，说明在 15% 单期换手上限下，久期缺口根本压不进 ±1.5 年——这是约束不可行的信号，不是模型算错了。**
+
+完整逐期明细见 [`examples/backtest_report.md`](examples/backtest_report.md)。产品化方向与边界见 [`docs/05-platform-roadmap.md`](docs/05-platform-roadmap.md)（那里写的是路线，不是现状）。
+
 ---
 
 ## 示例输出
@@ -322,6 +343,7 @@ python -m ins_am_agent --list-components    # 列出注册表里可用的组件�
 | [03 Agent 架构](docs/03-agent-architecture.md) | A/B/C/D 四层、做几个 Agent、优化建议 | 技术方案评审 |
 | [04 落地路线](docs/04-roadmap.md) | 机会矩阵、数据契约、合规红线、分阶段路线 | 项目排期与立项 |
 | [交互版四层架构图](docs/diagrams/insurance-am-agent-architecture.html) | 可点开探索的单文件 HTML，附可重生成的源 JSON | 面试演示、对外分享 |
+| [05 产品化路线](docs/05-platform-roadmap.md) | 已实现 / 规划中 / 明确不做的边界，以及工程化顺序 | 判断项目能走到哪 |
 
 ---
 
@@ -330,11 +352,13 @@ python -m ins_am_agent --list-components    # 列出注册表里可用的组件�
 ```text
 insurance-am-agent/
 ├─ pipeline.yaml              # L0 流水线定义：跑哪些阶段、用什么组件
+├─ pipeline.backtest.yaml     # L0 回测流水线：合成历史 → 走查回测 → 报告
 ├─ config/constraints.yaml    # L2 约束与政策（唯一来源：约束值 + 规则归属 + 治理口径）
 ├─ ins_am_agent/              # 零依赖的 Python 实现
 │  ├─ platform/               # L0 平台底座：注册表 · 流水线执行器 · YAML 子集解析
-│  ├─ data_layer/             # L1 数据与状态：适配器 · 质量校验 · 组合状态
+│  ├─ data_layer/             # L1 数据与状态：适配器 · 质量校验 · 组合状态 · 合成历史
 │  ├─ policy/                 # L2 约束与政策：装载与严格校验（fail closed）
+│  ├─ evaluation/             # 评估层：走查式回测 · 归因 · 收益风险指标
 │  ├─ agents/
 │  │  ├─ b_research.py        # L3 研究员注册表 + 交叉质询
 │  │  ├─ c_allocation.py      # L4 配置引擎（规则实现，可替换为求解器）
@@ -368,6 +392,7 @@ insurance-am-agent/
 - [x] L0 平台底座：配置驱动流水线 + 组件注册表（加研究员 / 换引擎只改配置）
 - [x] L1 / L2 拆分：数据与状态 · 约束与政策（约束收敛为单一来源，装载 fail closed）
 - [x] L1 组合状态：调仓流水与状态指纹（回测与归因的挂点）
+- [x] 回测与评估：走查式回测、收益归因、策略 vs 不调仓基准
 - [x] A 层：数据校验 + 约束清单生成
 - [x] B 层：四类研究员 Agent + 交叉质询
 - [x] C 层：久期缺口、压力测试、配置建议、换手成本

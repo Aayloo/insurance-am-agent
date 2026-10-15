@@ -10,7 +10,9 @@ from typing import Any, Dict, List, Optional
 
 from .. import __version__
 from ..agents import b_research, c_allocation, d_gate, d_report
-from ..data_layer import adapters, quality, state as state_layer
+from ..data_layer import adapters, quality, state as state_layer, synthetic
+from ..evaluation import backtest as backtest_layer
+from ..evaluation import report as backtest_report
 from ..policy import loader as policy_loader
 from .registry import Registry
 
@@ -90,9 +92,36 @@ def render_report(ctx: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def build_synthetic_history(ctx: Dict[str, Any], periods: int = 24, seed: int = 20260831) -> Any:
+    """生成确定性合成历史（L1）——回测输入，可逐字复算。"""
+    return synthetic.build_history(periods=periods, seed=seed)
+
+
+def load_history_file(ctx: Dict[str, Any], path: str) -> Any:
+    """读取历史数据文件（L1）：{"periods": [...]}，用于接真实多期数据。"""
+    return adapters.load_json_history(path)
+
+
+def run_backtest(ctx: Dict[str, Any], include_gate: bool = True) -> Dict[str, Any]:
+    """走查式回测（评估层）：逐期跑研究 → 配置 → 闸门，并与不调仓基准对照。"""
+    return backtest_layer.walk_forward(ctx["history"], ctx["policy"], include_gate=include_gate)
+
+
+def render_backtest(ctx: Dict[str, Any]) -> Dict[str, Any]:
+    """回测报告与审计记录。"""
+    result = ctx["backtest"]
+    policy = ctx["policy"]
+    return {
+        "report": backtest_report.render_markdown(result, policy, __version__),
+        "audit": backtest_report.audit_record(result, policy, __version__),
+    }
+
+
 BUILTIN_STAGES = (
     ("data", "json", load_snapshot),
     ("data", "quality", check_quality),
+    ("data", "synthetic", build_synthetic_history),
+    ("data", "history_file", load_history_file),
     ("policy", "file", load_policy),
     ("context", "assemble", assemble_context),
     ("research", "team", run_research),
@@ -100,6 +129,8 @@ BUILTIN_STAGES = (
     ("portfolio", "state", apply_state),
     ("gate", "compliance", run_gate),
     ("report", "markdown", render_report),
+    ("backtest", "walk_forward", run_backtest),
+    ("report", "backtest", render_backtest),
 )
 
 
